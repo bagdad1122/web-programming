@@ -1,1 +1,128 @@
-
+{
+  "categories": [
+    {
+      "id": "sedans",
+      "name": "Електроседани",
+      "items": [
+        {
+          "name": "BMW i5",
+          "description": "Сучасний бізнес-седан з високим рівнем комфорту та динаміки.",
+          "image": "img/bmw-i5.jpg"
+        },
+        {
+          "name": "Tesla Model S",
+          "description": "Флагманський седан з передовим автопілотом.",
+          "image": "img/model-s.jpg"
+        },
+        {
+          "name": "Porsche Taycan",
+          "description": "Спортивний електромобіль преміум-класу.",
+          "image": "img/taycan.jpg"
+        }
+      ]
+    },
+    {
+      "id": "ultra_chargers",
+      "name": "Ультрашвидкісні станції (від 150 kW)",
+      "items": [
+        {
+          "name": "Станція 400kW (Івано-Франківськ)",
+          "description": "Надшвидкісна зарядна станція європейського зразка для сумісних електромобілів.",
+          "image": "img/station-400kw.jpg"
+        },
+        {
+          "name": "Ionity 350kW",
+          "description": "Мережа потужних станцій для швидких подорожей.",
+          "image": "img/ionity.jpg"
+        },
+        {
+          "name": "Tesla Supercharger V3",
+          "description": "Фірмова станція потужністю до 250kW.",
+          "image": "img/supercharger.jpg"
+        }
+      ]
+    },
+    {
+      "id": "crossovers",
+      "name": "Електричні кросовери",
+      "items": [
+        {
+          "name": "Audi Q8 e-tron",
+          "description": "Преміальний німецький кросовер з великим запасом ходу та повним приводом.",
+          "image": "img/audi-q8.jpg"
+        },
+        {
+          "name": "Volkswagen ID.4",
+          "description": "Популярний сімейний електрокросовер з просторим салоном.",
+          "image": "img/vw-id4.jpg"
+        },
+        {
+          "name": "Hyundai Ioniq 5",
+          "description": "Футуристичний дизайн та підтримка ультрашвидкісної зарядки.",
+          "image": "img/ioniq5.jpg"
+        }
+      ]
+    },
+    {
+      "id": "city_cars",
+      "name": "Компактні міські авто",
+      "items": [
+        {
+          "name": "Nissan Leaf",
+          "description": "Класичний та надійний електромобіль для щоденних поїздок містом.",
+          "image": "img/nissan-leaf.jpg"
+        },
+        {
+          "name": "Fiat 500e",
+          "description": "Стильний та маневрений хетчбек для вузьких вулиць.",
+          "image": "img/fiat-500e.jpg"
+        },
+        {
+          "name": "Mini Cooper SE",
+          "description": "Динамічний міський автомобіль з картинговою керованістю.",
+          "image": "img/mini-cooper.jpg"
+        }
+      ]
+    },
+    {
+      "id": "home_chargers",
+      "name": "Домашні зарядні станції",
+      "items": [
+        {
+          "name": "Wallbox Pulsar Plus",
+          "description": "Компактна розумна станція на 22 kW з керуванням через смартфон.",
+          "image": "img/wallbox.jpg"
+        },
+        {
+          "name": "Tesla Wall Connector",
+          "description": "Естетична домашня зарядка, ідеальна для власників Tesla.",
+          "image": "img/tesla-wall.jpg"
+        },
+        {
+          "name": "Keba KeContact P30",
+          "description": "Надійна австрійська станція для безпечного заряджання вдома.",
+          "image": "img/keba.jpg"
+        }
+      ]
+    },
+    {
+      "id": "cables_adapters",
+      "name": "Кабелі та перехідники",
+      "items": [
+        {
+          "name": "Кабель Type 2 - Type 2 (32A)",
+          "description": "Трифазний кабель для підключення до публічних зарядних станцій.",
+          "image": "img/cable-type2.jpg"
+        },
+        {
+          "name": "Адаптер CCS1 на CCS2",
+          "description": "Дозволяє заряджати авто з американським портом на європейських швидкісних станціях.",
+          "image": "img/adapter-ccs.jpg"
+        },
+        {
+          "name": "Перехідник Type 1 на Type 2",
+          "description": "Для підключення американських авто до стандартних європейських розеток змінного струму.",
+          "image": "img/adapter-type1-2.jpg"
+        }
+      ]
+    }
