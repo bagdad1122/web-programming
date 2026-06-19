@@ -1,10 +1,18 @@
 let isGameRunning = false;
 let keys = {};
 
-// Обробники клавіатури (винесені назовні, щоб не дублюватись при перезапуску)
+// Завантаження зображень (спрайтів)
+const playerImg = new Image();
+playerImg.src = 'img/player.png';
+
+const obstacleImg = new Image();
+obstacleImg.src = 'img/obstacle.png';
+
+const chargerImg = new Image();
+chargerImg.src = 'img/charger.png';
+
 window.addEventListener('keydown', (e) => { 
     keys[e.code] = true; 
-    // Блокуємо скрол тільки для стрілок і пробілу, коли гра активна
     if (isGameRunning && (e.code === 'ArrowUp' || e.code === 'ArrowDown' || e.code === 'Space')) {
         e.preventDefault();
     }
@@ -19,31 +27,29 @@ function initGame() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    // Скидаємо стан гри для нових запусків
-    let player = { x: 50, y: 180, width: 60, height: 30, speed: 5, battery: 100, score: 0 };
+    // Розміри гравця можна трохи збільшити під пропорції іконки машини
+    let player = { x: 50, y: 180, width: 70, height: 35, speed: 5, battery: 100, score: 0 };
     let obstacles = [];
     let chargers = [];
     isGameRunning = true;
 
-    function spawnEntity(array, color, isCharger) {
+    function spawnEntity(array, isCharger) {
         array.push({
             x: canvas.width,
-            y: Math.random() * (canvas.height - 30),
-            width: isCharger ? 20 : 30 + Math.random() * 40,
-            height: isCharger ? 20 : 30 + Math.random() * 40,
+            y: Math.random() * (canvas.height - 40),
+            width: isCharger ? 30 : 35 + Math.random() * 15,
+            height: isCharger ? 30 : 35 + Math.random() * 15,
             speed: 3 + Math.random() * 2,
-            color: color
+            isCharger: isCharger
         });
     }
 
     function update() {
         if (!isGameRunning) return;
 
-        // Рух гравця
         if (keys['ArrowUp'] && player.y > 0) player.y -= player.speed;
         if (keys['ArrowDown'] && player.y < canvas.height - player.height) player.y += player.speed;
 
-        // Дренаж батареї
         player.battery -= 0.05;
         player.score += 1;
 
@@ -52,13 +58,13 @@ function initGame() {
             return;
         }
 
-        // Обробка перешкод (йдемо з кінця масиву, щоб уникнути багів при видаленні)
         for (let i = obstacles.length - 1; i >= 0; i--) {
             let obs = obstacles[i];
             obs.x -= obs.speed;
             
-            if (player.x < obs.x + obs.width && player.x + player.width > obs.x &&
-                player.y < obs.y + obs.height && player.y + player.height > obs.y) {
+            // Зіткнення (хітбокси трохи зменшені для більшої реалістичності іконок)
+            if (player.x < obs.x + obs.width - 5 && player.x + player.width > obs.x + 5 &&
+                player.y < obs.y + obs.height - 5 && player.y + player.height > obs.y + 5) {
                 player.battery -= 20;
                 obstacles.splice(i, 1);
             } else if (obs.x + obs.width < 0) {
@@ -66,7 +72,6 @@ function initGame() {
             }
         }
 
-        // Обробка зарядних станцій
         for (let i = chargers.length - 1; i >= 0; i--) {
             let ch = chargers[i];
             ch.x -= ch.speed;
@@ -80,9 +85,8 @@ function initGame() {
             }
         }
 
-        // Спавн
-        if (Math.random() < 0.02) spawnEntity(obstacles, '#dc3545', false);
-        if (Math.random() < 0.01) spawnEntity(chargers, '#198754', true);
+        if (Math.random() < 0.02) spawnEntity(obstacles, false);
+        if (Math.random() < 0.01) spawnEntity(chargers, true);
     }
 
     function draw() {
@@ -90,13 +94,32 @@ function initGame() {
         
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Гравець
-        ctx.fillStyle = '#0d6efd';
-        ctx.fillRect(player.x, player.y, player.width, player.height);
+        // Малювання гравця (з перевіркою чи завантажилась картинка)
+        if (playerImg.complete && playerImg.naturalHeight !== 0) {
+            ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
+        } else {
+            ctx.fillStyle = '#0d6efd';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
 
-        // Об'єкти
-        obstacles.forEach(obs => { ctx.fillStyle = obs.color; ctx.fillRect(obs.x, obs.y, obs.width, obs.height); });
-        chargers.forEach(ch => { ctx.fillStyle = ch.color; ctx.fillRect(ch.x, ch.y, ch.width, ch.height); });
+        // Малювання об'єктів
+        obstacles.forEach(obs => { 
+            if (obstacleImg.complete && obstacleImg.naturalHeight !== 0) {
+                ctx.drawImage(obstacleImg, obs.x, obs.y, obs.width, obs.height);
+            } else {
+                ctx.fillStyle = '#dc3545'; 
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height); 
+            }
+        });
+
+        chargers.forEach(ch => { 
+            if (chargerImg.complete && chargerImg.naturalHeight !== 0) {
+                ctx.drawImage(chargerImg, ch.x, ch.y, ch.width, ch.height);
+            } else {
+                ctx.fillStyle = '#198754'; 
+                ctx.fillRect(ch.x, ch.y, ch.width, ch.height); 
+            }
+        });
 
         // Інтерфейс
         ctx.fillStyle = 'white';
@@ -128,12 +151,10 @@ function gameOver(ctx, score) {
     if (btn) btn.innerText = 'Грати знову';
 }
 
-// Запуск гри
 document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'startGameBtn') {
         e.target.innerText = 'Гра йде...';
         initGame();
-        // Примусовий фокус для захоплення клавіатури
         window.focus(); 
     }
 });
