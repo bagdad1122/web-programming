@@ -12,6 +12,7 @@ async function loadData() {
         evData = data.categories;
         
         renderCatalog(evData);
+        setupRouting();
         
     } catch (error) {
         document.getElementById('main-content').innerHTML = 
@@ -19,30 +20,105 @@ async function loadData() {
     }
 }
 
-function renderCatalog(categories) {
+function renderCatalog(categories, searchQuery = '') {
     const contentArea = document.getElementById('main-content');
-    let htmlContent = '';
+    
+    let htmlContent = `
+        <div class="col-12 mb-4">
+            <input type="text" id="searchInput" class="form-control form-control-lg shadow-sm" placeholder="Пошук електромобілів або станцій..." value="${searchQuery}">
+        </div>
+    `;
+
+    let hasResults = false;
 
     categories.forEach(category => {
-        htmlContent += `<div class="col-12 mt-4 mb-3"><h3 class="text-primary">${category.name}</h3><hr></div>`;
-        
-        category.items.forEach(item => {
-            htmlContent += `
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <img src="${item.image}" class="card-img-top" alt="${item.name}" onerror="this.src='https://placehold.co/600x400?text=Auto'">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">${item.name}</h5>
-                            <p class="card-text flex-grow-1">${item.description}</p>
-                            <button class="btn btn-outline-primary mt-auto w-100">Детальніше</button>
+        const filteredItems = category.items.filter(item => 
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            item.description.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        if (filteredItems.length > 0) {
+            hasResults = true;
+            htmlContent += `<div class="col-12 mt-2 mb-3"><h3 class="text-primary">${category.name}</h3><hr></div>`;
+            
+            filteredItems.forEach(item => {
+                const isHighlighted = searchQuery !== '' ? 'border-success border-2 shadow' : 'border-0 shadow-sm';
+                
+                htmlContent += `
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card h-100 ${isHighlighted}" style="transition: all 0.3s ease;">
+                            <img src="${item.image}" class="card-img-top" alt="${item.name}" onerror="this.src='https://placehold.co/600x400?text=Auto'">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">${item.name}</h5>
+                                <p class="card-text flex-grow-1">${item.description}</p>
+                                <button class="btn btn-outline-primary mt-auto w-100">Детальніше</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
     });
 
+    if (!hasResults) {
+        htmlContent += `<div class="col-12 text-center"><p class="text-muted">За вашим запитом нічого не знайдено.</p></div>`;
+    }
+
     contentArea.innerHTML = htmlContent;
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.focus();
+        searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+        searchInput.addEventListener('input', (e) => {
+            renderCatalog(evData, e.target.value);
+        });
+    }
+}
+
+function setupRouting() {
+    const navCatalog = document.getElementById('nav-catalog');
+    const navGame = document.getElementById('nav-game');
+    const pageTitle = document.getElementById('page-title');
+    const navHome = document.getElementById('nav-home');
+
+    const showCatalog = (e) => {
+        if(e) e.preventDefault();
+        navCatalog.classList.add('active');
+        navGame.classList.remove('active');
+        pageTitle.innerText = 'Каталог електромобілів та станцій';
+        renderCatalog(evData);
+    };
+
+    navCatalog.addEventListener('click', showCatalog);
+    navHome.addEventListener('click', showCatalog);
+
+    navGame.addEventListener('click', (e) => {
+        e.preventDefault();
+        navGame.classList.add('active');
+        navCatalog.classList.remove('active');
+        pageTitle.innerText = 'Міні-гра: Енергорейд';
+        renderGame();
+    });
+}
+
+function renderGame() {
+    const contentArea = document.getElementById('main-content');
+    contentArea.innerHTML = `
+        <div class="col-12 text-center">
+            <div class="p-4 bg-white rounded shadow-sm border">
+                <canvas id="gameCanvas" width="800" height="400" class="w-100 bg-dark rounded" style="max-width: 800px; border: 2px solid #ccc;"></canvas>
+                <div class="mt-3">
+                    <button id="startGameBtn" class="btn btn-success btn-lg px-5">Почати гру</button>
+                </div>
+                <p class="mt-3 text-muted small">Керуйте електромобілем за допомогою стрілок (або кнопок на екрані), уникайте перешкод та збирайте заряд!</p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('startGameBtn').addEventListener('click', () => {
+        alert("Тут запуститься логіка гри!");
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
