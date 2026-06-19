@@ -43,6 +43,8 @@ function renderCatalog(categories, searchQuery = '') {
             
             filteredItems.forEach(item => {
                 const isHighlighted = searchQuery !== '' ? 'border-success border-2 shadow' : 'border-0 shadow-sm';
+                // Кодуємо назву, щоб уникнути проблем з пробілами при передачі у функцію
+                const encodedName = encodeURIComponent(item.name);
                 
                 htmlContent += `
                     <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
@@ -51,7 +53,7 @@ function renderCatalog(categories, searchQuery = '') {
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">${item.name}</h5>
                                 <p class="card-text flex-grow-1">${item.description}</p>
-                                <button class="btn btn-outline-primary mt-auto w-100">Детальніше</button>
+                                <button class="btn btn-outline-primary mt-auto w-100" onclick="showDetails('${encodedName}')">Детальніше</button>
                             </div>
                         </div>
                     </div>
@@ -75,6 +77,32 @@ function renderCatalog(categories, searchQuery = '') {
         });
     }
 }
+
+// Нова функція для відображення деталей у модальному вікні
+window.showDetails = function(encodedName) {
+    const itemName = decodeURIComponent(encodedName);
+    let selectedItem = null;
+    
+    // Шукаємо клікнутий елемент у наших даних
+    evData.forEach(category => {
+        const found = category.items.find(i => i.name === itemName);
+        if (found) selectedItem = found;
+    });
+
+    if (selectedItem) {
+        // Підставляємо дані у модальне вікно
+        document.getElementById('modalTitle').innerText = selectedItem.name;
+        document.getElementById('modalDescription').innerText = selectedItem.description;
+        
+        const imgEl = document.getElementById('modalImage');
+        imgEl.src = selectedItem.image;
+        imgEl.onerror = function() { this.src='https://placehold.co/600x400?text=Auto'; };
+
+        // Відкриваємо вікно за допомогою інструментів Bootstrap
+        const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+        modal.show();
+    }
+};
 
 function setupRouting() {
     const navCatalog = document.getElementById('nav-catalog');
@@ -115,10 +143,6 @@ function renderGame() {
             </div>
         </div>
     `;
-    
-    document.getElementById('startGameBtn').addEventListener('click', () => {
-        alert("Тут запуститься логіка гри!");
-    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
